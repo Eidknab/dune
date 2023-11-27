@@ -7,10 +7,11 @@ from classes.unit import Unit
 pygame.init()
 pygame.display.set_caption(GAMENAME)
 SCREEN = pygame.display.set_mode((WIDTH, HEIGTH))
+CLOCK = pygame.time.Clock()
 
 game = Game()
 help_text = game.font2.render("Press D to deploy. Left Clic to select. Arrow Keys to move", True, (255, 255, 255))
-channel = pygame.mixer.Channel(0)
+
 
 # Game loop
 running = True
@@ -66,6 +67,11 @@ while running:
             SCREEN.blit(unit.image, unit.rect)
     # Draw help text
     SCREEN.blit(help_text, (0, 480-32))
+    # Draw fps
+    fps = CLOCK.get_fps()
+    fps_text = game.font2.render(f"FPS: {fps:.0f}", True, (255, 255, 255))
+    SCREEN.blit(fps_text, (0, 0))
+    CLOCK.tick(144)
     
     # Screen refresh
     pygame.display.flip()

@@ -5,7 +5,7 @@ class Unit(pygame.sprite.Sprite):
         super().__init__()
         self.name = name
         self.text_display_time = None
-        self.text_display_time_max = 250
+        self.text_display_time_max = 16
         self.health = 100
         self.health_max = 100
         self.attack = 10
