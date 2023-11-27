@@ -54,7 +54,7 @@ while running:
             game.pressed[event.key] = False
             
     if game.unit1.text_display_time and pygame.time.get_ticks() - game.unit1.text_display_time < game.unit1.text_display_time_max:
-        text = game.font.render('Yes !?', True, 'white')
+        text = game.font.render('Yes !?', True, (255, 255, 255))
         SCREEN.blit(text, (game.unit1.rect.x - 4, game.unit1.rect.y - 16))
     # Screen refresh
     pygame.display.flip()
