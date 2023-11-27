@@ -9,6 +9,8 @@ pygame.display.set_caption(GAMENAME)
 SCREEN = pygame.display.set_mode((WIDTH, HEIGTH))
 
 game = Game()
+help_text = game.font2.render("Press D to deploy. Left Clic to select. Arrow Keys to move", True, (255, 255, 255))
+channel = pygame.mixer.Channel(0)
 
 # Game loop
 running = True
@@ -17,21 +19,23 @@ while running:
     for y in range(0, HEIGTH, TILESIZE):
         for x in range(0, WIDTH, TILESIZE):
             SCREEN.blit(BACKGROUND, (x, y))
-    SCREEN.blit(game.unit1.image, game.unit1.rect)
     
-    if game.pressed.get(pygame.K_UP) and game.unit1.rect.y > 0 and game.unit1.selected:
-        game.unit1.move_up()
-        game.unit1.image = pygame.image.load('assets/' + game.unit1.name + '_up.png')
-    elif game.pressed.get(pygame.K_DOWN) and game.unit1.rect.y < HEIGTH - TILESIZE and game.unit1.selected:
-        game.unit1.move_down()
-        game.unit1.image = pygame.image.load('assets/' + game.unit1.name + '_down.png')
-    elif game.pressed.get(pygame.K_RIGHT) and game.unit1.rect.x < WIDTH - TILESIZE and game.unit1.selected:
-        game.unit1.move_right()
-        game.unit1.image = pygame.image.load('assets/' + game.unit1.name + '_right.png')
-    elif game.pressed.get(pygame.K_LEFT) and game.unit1.rect.x > 0 and game.unit1.selected:
-        game.unit1.move_left()
-        game.unit1.image = pygame.image.load('assets/' + game.unit1.name + '_left.png')
-    
+    for i in range(1, MAXUNIT):
+        channel = pygame.mixer.Channel(0)
+        unit = getattr(game, f'unit{i}')
+        if unit is not None and game.pressed.get(pygame.K_UP) and unit.rect.y > 0 and unit.selected:
+            unit.move_up()
+            unit.image = pygame.image.load('assets/' + unit.name + '_up.png')
+        elif unit is not None and game.pressed.get(pygame.K_DOWN) and unit.rect.y < HEIGTH - TILESIZE and unit.selected:
+            unit.move_down()
+            unit.image = pygame.image.load('assets/' + unit.name + '_down.png')
+        elif unit is not None and game.pressed.get(pygame.K_RIGHT) and unit.rect.x < WIDTH - TILESIZE and unit.selected:
+            unit.move_right()
+            unit.image = pygame.image.load('assets/' + unit.name + '_right.png')
+        elif unit is not None and game.pressed.get(pygame.K_LEFT) and unit.rect.x > 0 and unit.selected:
+            unit.move_left()
+            unit.image = pygame.image.load('assets/' + unit.name + '_left.png')
+            
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -39,22 +43,29 @@ while running:
         elif event.type == pygame.USEREVENT:
             game.play_random_music()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if game.unit1.rect.collidepoint(pygame.mouse.get_pos()):
-                game.unit1.selected = True
-                print("Unit selected")
-                game.unit1.text_display_time = pygame.time.get_ticks()
-                game.unit1.text_display_time_max = game.unit1.text_display_time + 2000
-                game.unit1.sound_select.play()
-            else:
-                game.unit1.selected = False
-                print("Unit deselected")
+            game.select_unit()
         elif event.type == pygame.KEYDOWN:
-            game.pressed[event.key] = True
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
+                game.pressed[event.key] = True
+            elif event.key == pygame.K_d:
+                game.create_unit("tank")
         elif event.type == pygame.KEYUP:
-            game.pressed[event.key] = False
-            
-    if game.unit1.text_display_time and pygame.time.get_ticks() - game.unit1.text_display_time < game.unit1.text_display_time_max:
-        text = game.font.render('Yes !?', True, (255, 255, 255))
-        SCREEN.blit(text, (game.unit1.rect.x - 4, game.unit1.rect.y - 16))
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
+                game.pressed[event.key] = False
+    
+    for i in range(1, MAXUNIT):
+        unit = getattr(game, f'unit{i}')
+        if unit is not None:
+            if unit.text_display_time and pygame.time.get_ticks() - unit.text_display_time < unit.text_display_time_max:
+                text = game.font1.render(unit.message_selection, True, (255, 255, 255))
+                SCREEN.blit(text, (unit.rect.x - 4, unit.rect.y - 16))
+    # Draw units
+    for i in range(1, MAXUNIT):
+        unit = getattr(game, f'unit{i}')
+        if unit is not None:
+            SCREEN.blit(unit.image, unit.rect)
+    # Draw help text
+    SCREEN.blit(help_text, (0, 480-32))
+    
     # Screen refresh
     pygame.display.flip()

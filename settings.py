@@ -6,5 +6,6 @@ HEIGTH = 480
 FPS =60
 TILESIZE = 16
 BACKGROUND = pygame.image.load('assets/sand01.bmp')
+MAXUNIT = 50
 
 
