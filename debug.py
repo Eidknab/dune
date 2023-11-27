@@ -1,6 +1,7 @@
 import pygame
 pygame.init()
-font = pygame.font.Font(None, 24)
+
+font = pygame.font.SysFont("Arial", 16)
 
 # Debug function to display text on the screen
 def debug(info, y=10, x=10):

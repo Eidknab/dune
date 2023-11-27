@@ -159,4 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+assets/.DS_Store
+classes/.DS_Store
 .DS_Store
+classes/.__pycache__
+.__pycache__
